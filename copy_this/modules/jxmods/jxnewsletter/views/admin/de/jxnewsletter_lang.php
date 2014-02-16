@@ -17,6 +17,7 @@ $aLang = array(
     'JXNEWSLETTER_REVENUE'        => 'Umsatz',
 
     'SHOP_MODULE_GROUP_JXNEWSLETTER_DOWNLOAD'       => 'Download / Export',
+    'SHOP_MODULE_bJxNewsletterHeader'               => 'Spalten&uuml;berschriften exportieren',
     'SHOP_MODULE_sJxNewsletterSeparator'            => 'Trennzeichen',
     'SHOP_MODULE_sJxNewsletterSeparator_comma'      => ',&nbsp;&nbsp; (Komma)',
     'SHOP_MODULE_sJxNewsletterSeparator_semicolon'  => ';&nbsp;&nbsp; (Semikolon)',

@@ -39,6 +39,12 @@ $aModule = array(
                                     ),*/
                             array(
                                     'group' => 'JXNEWSLETTER_DOWNLOAD', 
+                                    'name'  => 'bJxNewsletterHeader', 
+                                    'type'  => 'bool', 
+                                    'value' => 'true'
+                                    ),
+                            array(
+                                    'group' => 'JXNEWSLETTER_DOWNLOAD', 
                                     'name'  => 'sJxNewsletterSeparator', 
                                     'type'  => 'select', 
                                     'value' => 'comma',

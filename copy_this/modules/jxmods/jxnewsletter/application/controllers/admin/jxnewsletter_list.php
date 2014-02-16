@@ -94,8 +94,10 @@ class jxnewsletter_list extends oxAdminView
         $sUsrIdList = oxConfig::getParameter( "jxidlist" );
         
         $sContent = '';
-        $aHeader = array_keys($aUsers[0]);
-        $sContent .= $sBegin . implode($sSep, $aHeader) . $sEnd . chr(13);
+        if ( $myConfig->getConfigParam("bJxNewsletterHeader") ) {
+            $aHeader = array_keys($aUsers[0]);
+            $sContent .= $sBegin . implode($sSep, $aHeader) . $sEnd . chr(13);
+        }
         foreach ($aUsers as $aUser) {
             if ( strpos($sUsrIdList,$aUser['oxcustnr']) !== FALSE ) {
                 $sContent .= $sBegin . implode($sSep, $aUser) . $sEnd . chr(13);

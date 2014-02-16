@@ -17,6 +17,7 @@ $aLang = array(
     'JXNEWSLETTER_REVENUE'        => 'Revenue',
 
     'SHOP_MODULE_GROUP_JXNEWSLETTER_DOWNLOAD'       => 'Download / Export',
+    'SHOP_MODULE_bJxNewsletterHeader'               => 'Export column headers',
     'SHOP_MODULE_sJxNewsletterSeparator'            => 'Separator',
     'SHOP_MODULE_sJxNewsletterSeparator_comma'      => ',&nbsp;&nbsp; (comma)',
     'SHOP_MODULE_sJxNewsletterSeparator_semicolon'  => ';&nbsp;&nbsp; (semicolon)',

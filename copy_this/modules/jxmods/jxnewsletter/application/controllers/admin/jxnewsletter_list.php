@@ -47,6 +47,7 @@ class jxnewsletter_list extends oxAdminView
 
         $aUsers = $this->_retrieveData($sSrcVal);
         $oSmarty->assign("aUsers",$aUsers);
+        $oSmarty->assign("jx_dbrows",count($aUsers));
 
         $oSmarty->assign("jx_all",$sChkAll);
         $oSmarty->assign("jx_confirmed",$sChkConfirmed);
@@ -60,16 +61,44 @@ class jxnewsletter_list extends oxAdminView
     
     public function downloadResult()
     {
+        $myConfig = oxRegistry::get("oxConfig");
+        switch ( $myConfig->getConfigParam("sJxNewsletterSeparator") ) {
+            case 'comma':
+                $sSep = ',';
+                break;
+            case 'semicolon':
+                $sSep = ';';
+                break;
+            case 'tab':
+                $sSep = chr(9);
+                break;
+            case 'pipe':
+                $sSep = '|';
+                break;
+            case 'tilde':
+                $sSep = '~';
+                break;
+            default:
+                $sSep = ',';
+                break;
+        }
+        if ( $myConfig->getConfigParam("bJxNewsletterQuote") ) {
+            $sBegin = '"';
+            $sSep   = '"' . $sSep . '"';
+            $sEnd   = '"';
+        }
         
         $aUsers = array();
         $aUsers = $this->_retrieveData($sSrcVal);
 
-        $aOxid = oxConfig::getParameter( "jxnewsletter_oxid" ); 
+        $sUsrIdList = oxConfig::getParameter( "jxidlist" );
         
         $sContent = '';
+        $aHeader = array_keys($aUsers[0]);
+        $sContent .= $sBegin . implode($sSep, $aHeader) . $sEnd . chr(13);
         foreach ($aUsers as $aUser) {
-            if ( in_array($aUser['oxid'], $aOxid) ) {
-                $sContent .= '"' . implode('","', $aUser) . '"' . chr(13);
+            if ( strpos($sUsrIdList,$aUser['oxcustnr']) !== FALSE ) {
+                $sContent .= $sBegin . implode($sSep, $aUser) . $sEnd . chr(13);
             }
         }
 
@@ -95,10 +124,6 @@ class jxnewsletter_list extends oxAdminView
         
         $sWhere = "";
         if ($sChkAll || $sChkConfirmed || $sChkConfirmed || $sChkUnconfirmed || $sChkBought) {
-            if ($sChkAll) {
-                if (!empty($sWhere)) $sWhere .= "OR ";
-                $sWhere .= "n.oxdboptin=0 ";
-            }
             if ($sChkConfirmed) {
                 if (!empty($sWhere)) $sWhere .= "OR ";
                 $sWhere .= "n.oxdboptin=1 ";
@@ -117,12 +142,15 @@ class jxnewsletter_list extends oxAdminView
                 $sWhere .= "o.oxuserid IS NOT NULL AND n.oxunsubscribed = '0000-00-00 00:00:00' ";
             }
             $sWhere = "AND (" . $sWhere . ") ";
+            if ($sChkAll) {
+                $sWhere = " ";
+            }
         }
         else
-            $sWhere = "AND n.oxdboptin=999 ";
+            $sWhere = "AND n.oxdboptin=999 "; // doesn't exists => empty result
         
 
-        $sSql = "SELECT u.oxid, n.oxsal, u.oxcustnr, n.oxfname, n.oxlname, u.oxcompany, n.oxemail, "
+        $sSql = "SELECT u.oxid, n.oxsal, u.oxcustnr, n.oxfname, n.oxlname, u.oxcompany, u.oxusername AS oxemail, "
                     . "u.oxstreet, u.oxstreetnr, u.oxzip, u.oxcity, oxfon, (SELECT c.oxtitle FROM oxcountry c WHERE c.oxid=u.oxcountryid) AS oxcountry, "
                     . "o.oxlang, SUM(o.oxtotalordersum) AS oxrevenue, "
                     . "CASE n.oxdboptin "
@@ -131,11 +159,11 @@ class jxnewsletter_list extends oxAdminView
                         . "WHEN 2 THEN 'unconfirmed' END "
                     . "AS oxstatus, "
                     . "u.oxregister "
-                . "FROM oxnewssubscribed n "
-                . "LEFT JOIN oxuser u "
-                    . "ON (n.oxuserid=u.oxid) "
+                . "FROM oxuser u "
+                . "LEFT JOIN oxnewssubscribed n "
+                    . "ON (u.oxid = n.oxuserid) "
                 . "LEFT JOIN oxorder o "
-                    . "ON (u.oxid=o.oxuserid) "
+                    . "ON (u.oxid = o.oxuserid) "
                 . "WHERE u.oxactive = 1 "
                 . $sWhere
                 . "GROUP BY u.oxid ";

@@ -16,12 +16,16 @@ $aLang = array(
     'JXNEWSLETTER_DOWNLOAD'       => 'Download',
     'JXNEWSLETTER_REVENUE'        => 'Revenue',
 
-    'SHOP_MODULE_GROUP_JXINVENTORY_ACTIVATESETTINGS'     => 'Module Activation',
-    'SHOP_MODULE_bJxInventoryCopyOnActivate'             => 'Copy Shop stock to jxInventory stock',
-    'SHOP_MODULE_GROUP_JXINVENTORY_DEACTIVATESETTINGS'   => 'Module Deactivation',
-    'SHOP_MODULE_bJxInventoryDropOnDeactivate'           => 'Delete inventory data on deactivation',
+    'SHOP_MODULE_GROUP_JXNEWSLETTER_DOWNLOAD'       => 'Download / Export',
+    'SHOP_MODULE_sJxNewsletterSeparator'            => 'Separator',
+    'SHOP_MODULE_sJxNewsletterSeparator_comma'      => ',&nbsp;&nbsp; (comma)',
+    'SHOP_MODULE_sJxNewsletterSeparator_semicolon'  => ';&nbsp;&nbsp; (semicolon)',
+    'SHOP_MODULE_sJxNewsletterSeparator_tab'        => '&rarr; (tab)',
+    'SHOP_MODULE_sJxNewsletterSeparator_pipe'       => '|&nbsp;&nbsp; (pipe)',
+    'SHOP_MODULE_sJxNewsletterSeparator_tilde'      => '&sim;&nbsp; (tilde)',
+    'SHOP_MODULE_bJxNewsletterQuote'                => 'Encapsulate columns by quotes',
     
-    'charset'                       => 'ISO-8859-15',
+    'charset'                      => 'ISO-8859-15',
 );
 
 ?>

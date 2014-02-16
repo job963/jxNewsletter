@@ -12,8 +12,8 @@ $aModule = array(
     'id'           => 'jxnewsletter',
     'title'        => 'jxNewsletter - Display and Export of Newsletter Subscriptions',
     'description'  => array(
-                        'de'=>'Anzeige und Export von Newletter Abonnenten.',
-                        'en'=>'Display and Export of Newsletter Subscriptions.'
+                        'de' => 'Anzeige und Export von Newletter Abonnenten.',
+                        'en' => 'Display and Export of Newsletter Subscriptions.'
                         ),
     'thumbnail'    => 'jxnewsletter.png',
     'version'      => '0.2',
@@ -31,6 +31,26 @@ $aModule = array(
     'events'       => array(
                         ),
     'settings'     => array(
+                            /*array(
+                                    'group' => 'JXNEWSLETTER_COMMON', 
+                                    'name'  => 'sJxNewsletterSeparator', 
+                                    'type'  => 'str', 
+                                    'value' => ','
+                                    ),*/
+                            array(
+                                    'group' => 'JXNEWSLETTER_DOWNLOAD', 
+                                    'name'  => 'sJxNewsletterSeparator', 
+                                    'type'  => 'select', 
+                                    'value' => 'comma',
+                                    'constrains' => 'comma|semicolon|tab|pipe|tilde', 
+                                    'position' => 0 
+                                    ),
+                            array(
+                                    'group' => 'JXNEWSLETTER_DOWNLOAD', 
+                                    'name'  => 'bJxNewsletterQuote', 
+                                    'type'  => 'bool', 
+                                    'value' => 'true'
+                                    ),
                         )
     );
 

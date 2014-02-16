@@ -16,12 +16,16 @@ $aLang = array(
     'JXNEWSLETTER_DOWNLOAD'       => 'Download',
     'JXNEWSLETTER_REVENUE'        => 'Umsatz',
 
-    'SHOP_MODULE_GROUP_JXINVENTORY_ACTIVATESETTINGS'     => 'Modul-Aktivierung',
-    'SHOP_MODULE_bJxInventoryCopyOnActivate'             => 'Shop-Lagerbestand nach jxInventory-Lager kopieren',
-    'SHOP_MODULE_GROUP_JXINVENTORY_DEACTIVATESETTINGS'   => 'Modul-Deaktivierung',
-    'SHOP_MODULE_bJxInventoryDropOnDeactivate'           => 'Lagerbestand-Daten bei Deaktivung l&ouml;schen',
+    'SHOP_MODULE_GROUP_JXNEWSLETTER_DOWNLOAD'       => 'Download / Export',
+    'SHOP_MODULE_sJxNewsletterSeparator'            => 'Trennzeichen',
+    'SHOP_MODULE_sJxNewsletterSeparator_comma'      => ',&nbsp;&nbsp; (Komma)',
+    'SHOP_MODULE_sJxNewsletterSeparator_semicolon'  => ';&nbsp;&nbsp; (Semikolon)',
+    'SHOP_MODULE_sJxNewsletterSeparator_tab'        => '&rarr; (Tabulator)',
+    'SHOP_MODULE_sJxNewsletterSeparator_pipe'       => '|&nbsp;&nbsp; (Senkrechter Strich)',
+    'SHOP_MODULE_sJxNewsletterSeparator_tilde'      => '&sim;&nbsp; (Tilde)',
+    'SHOP_MODULE_bJxNewsletterQuote'                => 'Spalten mit Anf&uuml;hrungszeichen begrenzen',
     
-    'charset'                       => 'ISO-8859-15',
+    'charset'                      => 'ISO-8859-15',
 );
 
 ?>

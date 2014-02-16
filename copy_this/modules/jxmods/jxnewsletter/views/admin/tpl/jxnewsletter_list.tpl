@@ -2,6 +2,11 @@
 <link href="[{$oViewConf->getModuleUrl('jxnewsletter','out/admin/src/jxnewsletter.css')}]" type="text/css" rel="stylesheet">
 
 <script type="text/javascript">
+    
+var idlist = "";
+var rowschecked = 0;
+var updateDisplay = true;
+    
   if(top)
   {
     top.sMenuItem    = "[{ oxmultilang ident="mxuadmin" }]";
@@ -9,6 +14,7 @@
     top.sWorkArea    = "[{$_act}]";
     top.setTitle();
   }
+
 
 function editThis( sID, sClass )
 {
@@ -50,6 +56,7 @@ function editThis( sID, sClass )
     oTransfer.submit();
 }
 
+
 function change_all( name, elem )
 {
     if(!elem || !elem.form) 
@@ -59,6 +66,7 @@ function change_all( name, elem )
     if (!chkbox) 
         return alert(name + " doesn't exist!");
 
+    updateDisplay = false;
     if (!chkbox.length) 
         chkbox.checked = elem.checked; 
     else 
@@ -66,7 +74,33 @@ function change_all( name, elem )
             chkbox[i].checked = elem.checked;
             changeColor(elem.checked,i);
         }
+    updateDisplay = true;
+    document.getElementById('rowschecked').innerHTML = rowschecked;
+    if (rowschecked > 0)
+        document.getElementById('btndownload').disabled = false;
+    else
+        document.getElementById('btndownload').disabled = true;
 }
+
+
+function implode_all( name, elem )
+{
+    if(!elem || !elem.form) 
+        return alert("Check Parameters");
+
+    var chkbox = elem.form.elements[name];
+    if (!chkbox) 
+        return alert(name + " doesn't exist!");
+
+    if (!chkbox.length) 
+        chkbox.checked = false; 
+    else 
+        for(var i = 0; i < chkbox.length; i++) {
+            if (chkbox[i].checked)
+                idlist = idlist + ',' + chkbox[i].value;
+        }
+}
+
 
 function changeColor(checkValue,rowNumber)
 {
@@ -77,18 +111,33 @@ function changeColor(checkValue,rowNumber)
             document.getElementById(elemName).style.color = "blue";
             document.getElementById(elemName).style.fontWeight = "bold";
         }
+        rowschecked++;
     } else {
         for (var i = 0; i < aColumns.length; i++) {
             elemName = aColumns[i] + rowNumber;
             document.getElementById(elemName).style.color = "black";
             document.getElementById(elemName).style.fontWeight = "normal";
         }
+        rowschecked--;
+    }
+    if (rowschecked <= 0) {
+        rowschecked = 0;
+        document.getElementById('maincheck').checked = false;
+    }
+    if (rowschecked > [{$jx_dbrows}]) {
+        rowschecked = [{$jx_dbrows}];
+    }
+    if (updateDisplay) {
+        document.getElementById('rowschecked').innerHTML = rowschecked;
+        if (rowschecked > 0)
+            document.getElementById('btndownload').disabled = false;
+        else
+            document.getElementById('btndownload').disabled = true;
     }
 }
 
 </script>
 
-[{*<div class="center">*}]
     <h1>[{ oxmultilang ident="JXNEWSLETTER_TITLE" }]</h1>
     <form name="transfer" id="transfer" action="[{ $shop->selflink }]" method="post">
         [{ $shop->hiddensid }]
@@ -104,38 +153,54 @@ function changeColor(checkValue,rowNumber)
         <input type="hidden" name="cl" value="jxnewsletter_list">
         <input type="hidden" name="fnc" value="">
         <input type="hidden" name="oxid" value="[{ $oxid }]">
+        <input type="hidden" name="jxidlist" value="">
         <table><tr>
         <td align="left">
             <fieldset style="width:200px;">
-                <legend><b> [{ oxmultilang ident="JXNEWSLETTER_FILTER" }] </b></legend>
+                <legend><b> [{ oxmultilang ident="JXNEWSLETTER_FILTER" }] ([{$jx_dbrows}]) </b></legend>
                 <input type="checkbox" id="jx_all" name="jx_all" value="jx_all" [{if $jx_all=="jx_all"}]checked="checked"[{/if}] 
                        onclick="document.getElementById('jx_confirmed').checked=document.getElementById('jx_all').checked;
                                 document.getElementById('jx_unconfirmed').checked=document.getElementById('jx_all').checked;
                                 document.getElementById('jx_unsubscribed').checked=document.getElementById('jx_all').checked;
                                 document.getElementById('jx_bought').checked=document.getElementById('jx_all').checked;
+                                document.forms['jxnewsletter'].elements['fnc'].value = '';
                                 document.forms.jxnewsletter.submit();">
                 <label for="jx_all"> [{ oxmultilang ident="JXNEWSLETTER_ALL" }]</label><br />
                 
-                <input type="checkbox" id="jx_confirmed" name="jx_confirmed" value="jx_confirmed" [{if $jx_confirmed=="jx_confirmed"}]checked="checked"[{/if}] onclick="document.getElementById('jx_all').checked=false;document.forms.jxnewsletter.submit();">
+                <input type="checkbox" id="jx_confirmed" name="jx_confirmed" value="jx_confirmed" [{if $jx_confirmed=="jx_confirmed"}]checked="checked"[{/if}] 
+                       onclick="document.forms['jxnewsletter'].elements['fnc'].value = '';
+                                document.getElementById('jx_all').checked=false;
+                                document.forms.jxnewsletter.submit();">
                 <label for="jx_confirmed"> <img src="[{$oViewConf->getModuleUrl('jxnewsletter','out/admin/src/bg/ico_active.png')}]" /> [{ oxmultilang ident="JXNEWSLETTER_CONFIRMED" }]</label><br />
                 
-                <input type="checkbox" id="jx_unconfirmed" name="jx_unconfirmed" value="jx_unconfirmed" [{if $jx_unconfirmed=="jx_unconfirmed"}]checked="checked"[{/if}] onclick="document.getElementById('jx_all').checked=false;document.forms.jxnewsletter.submit();">
+                <input type="checkbox" id="jx_unconfirmed" name="jx_unconfirmed" value="jx_unconfirmed" [{if $jx_unconfirmed=="jx_unconfirmed"}]checked="checked"[{/if}] 
+                       onclick="document.forms['jxnewsletter'].elements['fnc'].value = '';
+                                document.getElementById('jx_all').checked=false;
+                                document.forms.jxnewsletter.submit();">
                 <label for="jx_unconfirmed"> <img src="[{$oViewConf->getModuleUrl('jxnewsletter','out/admin/src/bg/ico_unconfirmed.png')}]" /> [{ oxmultilang ident="JXNEWSLETTER_UNCONFIRMED" }]</label><br />
                 
-                <input type="checkbox" id="jx_unsubscribed" name="jx_unsubscribed" value="jx_unsubscribed" [{if $jx_unsubscribed=="jx_unsubscribed"}]checked="checked"[{/if}] onclick="document.getElementById('jx_all').checked=false;document.forms.jxnewsletter.submit();">
+                <input type="checkbox" id="jx_unsubscribed" name="jx_unsubscribed" value="jx_unsubscribed" [{if $jx_unsubscribed=="jx_unsubscribed"}]checked="checked"[{/if}] 
+                       onclick="document.forms['jxnewsletter'].elements['fnc'].value = '';
+                                document.getElementById('jx_all').checked=false;
+                                document.forms.jxnewsletter.submit();">
                 <label for="jx_unsubscribed"> <img src="[{$oViewConf->getModuleUrl('jxnewsletter','out/admin/src/bg/ico_unsubscribed.png')}]" /> [{ oxmultilang ident="JXNEWSLETTER_UNSUBSCRIBED" }]</label><br />
                 
-                <input type="checkbox" id="jx_bought" name="jx_bought" value="jx_bought" [{if $jx_bought=="jx_bought"}]checked="checked"[{/if}] onclick="document.getElementById('jx_all').checked=false;document.forms.jxnewsletter.submit();">
+                <input type="checkbox" id="jx_bought" name="jx_bought" value="jx_bought" [{if $jx_bought=="jx_bought"}]checked="checked"[{/if}] 
+                       onclick="document.forms['jxnewsletter'].elements['fnc'].value = '';
+                                document.getElementById('jx_all').checked=false;
+                                document.forms.jxnewsletter.submit();">
                 <label for="jx_bought"> <img src="[{$oViewConf->getModuleUrl('jxnewsletter','out/admin/src/bg/ico_bought.png')}]" /> [{ oxmultilang ident="JXNEWSLETTER_BOUGHT" }]</label><br />
             </fieldset>
         </td>
         <td valign="top">
             <fieldset style="width:200px;">
-                <legend><b> [{ oxmultilang ident="JXNEWSLETTER_EXPORT" }] </b></legend>
+                <legend><b> [{ oxmultilang ident="JXNEWSLETTER_EXPORT" }] (<span id="rowschecked">0</span>)</b></legend>
                 [{ oxmultilang ident="JXNEWSLETTER_EXPLAIN" }]
                 <br /><br />
-                <input class="edittext" type="submit" 
-                    onClick="document.forms['jxnewsletter'].elements['fnc'].value = 'downloadResult';" 
+                <input class="edittext" type="submit" id="btndownload" disabled="disabled"
+                    onClick="implode_all('jxnewsletter_oxid[]', this);
+                             document.forms['jxnewsletter'].elements['jxidlist'].value = idlist;
+                             document.forms['jxnewsletter'].elements['fnc'].value = 'downloadResult';" 
                     value=" [{ oxmultilang ident="JXNEWSLETTER_DOWNLOAD" }] " [{ $readonly }]>
             </fieldset>
         </td>
@@ -160,7 +225,7 @@ function changeColor(checkValue,rowNumber)
             <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="USER_LIST_ZIP" }]/[{ oxmultilang ident="USER_LIST_PLACE" }]</div></div></td>
             <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_COUNTRY" }]</div></div></td>
             <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="JXNEWSLETTER_REVENUE" }]</div></div></td>
-            <td class="listfilter" style="[{$headStyle}]" align="center"><div class="r1"><div class="b1"><input type="checkbox" onclick="change_all('jxnewsletter_oxid[]', this)"></div></div></td>
+            <td class="listfilter" style="[{$headStyle}]" align="center"><div class="r1"><div class="b1"><input type="checkbox" onclick="change_all('jxnewsletter_oxid[]', this)" id="maincheck"></div></div></td>
         </tr>
 
         [{ assign var="actArtTitle" value="..." }]
@@ -243,7 +308,7 @@ function changeColor(checkValue,rowNumber)
                 <td class="[{$listclass}]" align="center">
                     <input type="checkbox" name="jxnewsletter_oxid[]" 
                         onclick="changeColor(this.checked,[{$i}]);" 
-                        value="[{$User.oxid}]">
+                        value="[{$User.oxcustnr}]">
                 </td>
                 [{ assign var="i" value=$i+1 }]
             </tr>

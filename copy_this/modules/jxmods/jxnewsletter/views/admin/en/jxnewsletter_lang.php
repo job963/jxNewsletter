@@ -1,5 +1,6 @@
 <?php
-$sLangName  = "English";
+include '../modules/jxmods/jxnewsletter/application/views/admin/en/jxnewsletter_lang.php'
+/*$sLangName  = "English";
 $iLangNr    = 1;
 $aLang = array(
     'jxnewsletter_menu'        => 'Newsletter Subscriptions',
@@ -27,6 +28,6 @@ $aLang = array(
     'SHOP_MODULE_bJxNewsletterQuote'                => 'Encapsulate columns by quotes',
     
     'charset'                      => 'ISO-8859-15',
-);
+);*/
 
 ?>

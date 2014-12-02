@@ -26,34 +26,34 @@ class jxnewsletter_list extends oxAdminView
 {
     protected $_sThisTemplate = "jxnewsletter_list.tpl";
 
+/*
+ * 
+ */
     public function render()
     {
         parent::render();
-        $oSmarty = oxUtilsView::getInstance()->getSmarty();
-        $oSmarty->assign( "oViewConf", $this->_aViewData["oViewConf"]);
-        $oSmarty->assign( "shop", $this->_aViewData["shop"]);
-
-        $sChkAll = oxConfig::getParameter( 'jx_all' );
-        $sChkConfirmed = oxConfig::getParameter( 'jx_confirmed' );
-        $sChkUnconfirmed = oxConfig::getParameter( 'jx_unconfirmed' );
-        $sChkUnsubscribed = oxConfig::getParameter( 'jx_unsubscribed' );
-        $sChkBought = oxConfig::getParameter( 'jx_bought' );
+        
+        $sChkAll = $this->getConfig()->getRequestParameter( 'jx_all' );
+        $sChkConfirmed = $this->getConfig()->getRequestParameter( 'jx_confirmed' );
+        $sChkUnconfirmed = $this->getConfig()->getRequestParameter( 'jx_unconfirmed' );
+        $sChkUnsubscribed = $this->getConfig()->getRequestParameter( 'jx_unsubscribed' );
+        $sChkBought = $this->getConfig()->getRequestParameter( 'jx_bought' );
 
         if (empty($sSrcVal))
             $sSrcVal = "";
         else
             $sSrcVal = strtoupper($sSrcVal);
-        $oSmarty->assign( "jxnewsletter_srcval", $sSrcVal );
+        $this->_aViewData["jxnewsletter_srcval"] = $sSrcVal;
 
         $aUsers = $this->_retrieveData($sSrcVal);
-        $oSmarty->assign("aUsers",$aUsers);
-        $oSmarty->assign("jx_dbrows",count($aUsers));
+        $this->_aViewData["aUsers"] = $aUsers;
+        $this->_aViewData["jx_dbrows"] = count($aUsers);
 
-        $oSmarty->assign("jx_all",$sChkAll);
-        $oSmarty->assign("jx_confirmed",$sChkConfirmed);
-        $oSmarty->assign("jx_unconfirmed",$sChkUnconfirmed);
-        $oSmarty->assign("jx_unsubscribed",$sChkUnsubscribed);
-        $oSmarty->assign("jx_bought",$sChkBought);
+        $this->_aViewData["jx_all"] = $sChkAll;
+        $this->_aViewData["jx_confirmed"] = $sChkConfirmed;
+        $this->_aViewData["jx_unconfirmed"] = $sChkUnconfirmed;
+        $this->_aViewData["jx_unsubscribed"] = $sChkUnsubscribed;
+        $this->_aViewData["jx_bought"] = $sChkBought;
         
         return $this->_sThisTemplate;
     }
@@ -91,7 +91,7 @@ class jxnewsletter_list extends oxAdminView
         $aUsers = array();
         $aUsers = $this->_retrieveData($sSrcVal);
 
-        $sUsrIdList = oxConfig::getParameter( "jxidlist" );
+        $sUsrIdList = $this->getConfig()->getRequestParameter( 'jxidlist' );
         
         $sContent = '';
         if ( $myConfig->getConfigParam("bJxNewsletterHeader") ) {
@@ -117,12 +117,32 @@ class jxnewsletter_list extends oxAdminView
     
     private function _retrieveData($sSrcVal)
     {
-        
-        $sChkAll = oxConfig::getParameter( 'jx_all' );
-        $sChkConfirmed = oxConfig::getParameter( 'jx_confirmed' );
-        $sChkUnconfirmed = oxConfig::getParameter( 'jx_unconfirmed' );
-        $sChkUnsubscribed = oxConfig::getParameter( 'jx_unsubscribed' );
-        $sChkBought = oxConfig::getParameter( 'jx_bought' );
+        $myConfig = oxRegistry::get("oxConfig");
+
+        $aIncFiles = array();
+        $aIncFields = array();
+        if (count($myConfig->getConfigParam("aJxNewsletterIncludeFiles")) != 0) {
+            $sIncFields = '';
+            $aIncFiles = $myConfig->getConfigParam("aJxNewsletterIncludeFiles");
+            $sIncPath = $this->jxGetModulePath() . '/application/controllers/admin/';
+            foreach ($aIncFiles as $sIncFile) { 
+                $sIncFile = $sIncPath . 'jxnewsletter_' . $sIncFile . '.inc.php';
+                try {
+                    require $sIncFile;
+                }
+                catch (Exception $e) {
+                    echo $e->getMessage();
+                    die();
+                }
+                $sIncFields .= ', ' . $aIncFields['field'];
+            } 
+        }
+                
+        $sChkAll = $this->getConfig()->getRequestParameter( 'jx_all' );
+        $sChkConfirmed = $this->getConfig()->getRequestParameter( 'jx_confirmed' );
+        $sChkUnconfirmed = $this->getConfig()->getRequestParameter( 'jx_unconfirmed' );
+        $sChkUnsubscribed = $this->getConfig()->getRequestParameter( 'jx_unsubscribed' );
+        $sChkBought = $this->getConfig()->getRequestParameter( 'jx_bought' );
         
         $sWhere = "";
         if ($sChkAll || $sChkConfirmed || $sChkConfirmed || $sChkUnconfirmed || $sChkBought) {
@@ -151,16 +171,92 @@ class jxnewsletter_list extends oxAdminView
         else
             $sWhere = "AND n.oxdboptin=999 "; // doesn't exists => empty result
         
+        // Is the CUSTOMER NUMBER choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterCustNo') )
+            $sCustNoField = 'u.oxcustnr,';
+        else
+            $sCustNoField = '';
+        
+        // Is the COMPANY choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterCompanys') )
+            $sAddressField = 'u.oxcompany,';
+        else
+            $sAddressField = '';
+        
+        // Is the ADDRESS choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterAddress') )
+            $sAddressField = 'u.oxstreet, u.oxstreetnr, u.oxzip, u.oxcity,';
+        else
+            $sAddressField = '';
+        
+        // Is the PHONE choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterPhone') )
+            $sPhone = 'oxfon,';
+        else
+            $sPhone = '';
+        
+        // Is the COUNTRY choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterCountry') )
+            $sCountry = '(SELECT c.oxtitle FROM oxcountry c WHERE c.oxid=u.oxcountryid) AS oxcountry,';
+        else
+            $sCountry = '';
+        
+        // Is the SUBSCRIBED choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterSubscribed') )
+            $sSubscribed = ',DATE(n.oxsubscribed) AS oxsubscribed';
+        else
+            $sSubscribed = '';
+        
+        // Is the LANGUAGE choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterLanguage') )
+            $sLanguage = 'o.oxlang,';
+        else
+            $sLanguage = '';
+        
+        // Is the REVENUE choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterRevenue') )
+            $sRevenue = 'SUM(o.oxtotalordersum) AS oxrevenue,';
+        else
+            $sRevenue = '';
+        
+        // Is the ORDER COUNT choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterOrderCount') )
+            $sOrderCount = 'COUNT(o.oxid) AS oxordercount,';
+        else
+            $sOrderCount = '';
 
-        $sSql = "SELECT u.oxid, n.oxsal, u.oxcustnr, n.oxfname, n.oxlname, u.oxcompany, u.oxusername AS oxemail, "
-                    . "u.oxstreet, u.oxstreetnr, u.oxzip, u.oxcity, oxfon, (SELECT c.oxtitle FROM oxcountry c WHERE c.oxid=u.oxcountryid) AS oxcountry, "
-                    . "o.oxlang, SUM(o.oxtotalordersum) AS oxrevenue, "
+        // Is the RETURN COUNT choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterReturnCount') )
+            $sReturnCount = '(SELECT IFNULL(SUM(oa.oxamount),0) '
+                            . 'FROM oxorder o1, oxorderarticles oa '
+                            . 'WHERE u.oxid = o1.oxuserid '
+                                . 'AND o1.oxid = oa.oxorderid '
+                                . 'AND oa.oxstorno = 1) '
+                            . 'AS oxreturncount,';
+        else
+            $sReturnCount = '';
+
+        // Is the RETURN SUM choosen
+        if ( $myConfig->getConfigParam('bJxNewsletterReturnSum') )
+            $sReturnSum = '(SELECT IFNULL(SUM(oa.oxbrutprice),0.0) '
+                            . 'FROM oxorder o1, oxorderarticles oa '
+                            . 'WHERE u.oxid = o1.oxuserid '
+                                . 'AND o1.oxid = oa.oxorderid '
+                                . 'AND oa.oxstorno = 1) '
+                            . 'AS oxreturnsum,';
+        else
+            $sReturnSum = '';
+
+        $sSql = "SELECT u.oxid, n.oxsal, {$sCustNoField} n.oxfname, n.oxlname, {$sCompany} u.oxusername AS oxemail, "
+                    . "{$sAddressField} {$sPhone} {$sCountry} "
+                    . "{$sLanguage} {$sRevenue} {$sOrderCount} {$sReturnCount} {$sReturnSum} "
                     . "CASE n.oxdboptin "
                         . "WHEN 0 THEN IF(n.oxunsubscribed != '0000-00-00 00:00:00','unsubscribed',IF((SELECT COUNT(*) FROM oxorder o1 WHERE o1.oxuserid=u.oxid) = 0,'unknown','bought')) "
                         . "WHEN 1 THEN 'confirmed' "
                         . "WHEN 2 THEN 'unconfirmed' END "
                     . "AS oxstatus, "
-                    . "u.oxregister "
+                    . "DATE(u.oxregister) AS oxregister {$sSubscribed} "
+                    . "{$sIncFields} "
                 . "FROM oxuser u "
                 . "LEFT JOIN oxnewssubscribed n "
                     . "ON (u.oxid = n.oxuserid) "
@@ -173,6 +269,7 @@ class jxnewsletter_list extends oxAdminView
         $aUsers = array();
 
         $oDb = oxDb::getDb( oxDB::FETCH_MODE_ASSOC );
+        //echo '<hr>' . $sSql . '<hr>';
         $rs = $oDb->Execute($sSql);
         while (!$rs->EOF) {
             array_push($aUsers, $rs->fields);
@@ -181,5 +278,23 @@ class jxnewsletter_list extends oxAdminView
         
         return $aUsers;
     }
- }
+ 
+    
+    public function jxGetModulePath()
+    {
+        $sModuleId = $this->getEditObjectId();
+
+        $this->_aViewData['oxid'] = $sModuleId;
+
+        $oModule = oxNew('oxModule');
+        $oModule->load($sModuleId);
+        $sModuleId = $oModule->getId();
+        
+        $myConfig = oxRegistry::get("oxConfig");
+        $sModulePath = $myConfig->getConfigParam("sShopDir") . 'modules/' . $oModule->getModulePath("jxnewsletter");
+        
+        return $sModulePath;
+    }
+    
+}
 ?>

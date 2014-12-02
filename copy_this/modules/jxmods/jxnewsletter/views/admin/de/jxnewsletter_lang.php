@@ -1,5 +1,6 @@
 <?php
-$sLangName  = "Deutsch";
+include '../modules/jxmods/jxnewsletter/application/views/admin/de/jxnewsletter_lang.php'
+/*$sLangName  = "Deutsch";
 $iLangNr    = 0;
 $aLang = array(
     'jxnewsletter_menu'        => 'Newsletter Empf&auml;nger',
@@ -27,6 +28,6 @@ $aLang = array(
     'SHOP_MODULE_bJxNewsletterQuote'                => 'Spalten mit Anf&uuml;hrungszeichen begrenzen',
     
     'charset'                      => 'ISO-8859-15',
-);
+);*/
 
 ?>

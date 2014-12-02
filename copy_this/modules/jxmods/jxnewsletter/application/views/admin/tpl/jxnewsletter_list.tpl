@@ -138,6 +138,8 @@ function changeColor(checkValue,rowNumber)
 
 </script>
 
+[{assign var="oxConfig" value=$oView->getConfig()}]
+
     <h1>[{ oxmultilang ident="JXNEWSLETTER_TITLE" }]</h1>
     <form name="transfer" id="transfer" action="[{ $shop->selflink }]" method="post">
         [{ $shop->hiddensid }]
@@ -222,9 +224,18 @@ function changeColor(checkValue,rowNumber)
             <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_COMPANY" }]</div></div></td>
             [{*<td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_TELEPHONE" }]</div></div></td>*}]
             [{*<td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="USER_MAIN_STRNR" }]</div></div></td>*}]
-            <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="USER_LIST_ZIP" }]/[{ oxmultilang ident="USER_LIST_PLACE" }]</div></div></td>
-            <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_COUNTRY" }]</div></div></td>
-            <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="JXNEWSLETTER_REVENUE" }]</div></div></td>
+            [{if $oxConfig->getShopConfVar('bJxNewsletterAddress')}]
+                <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="USER_LIST_ZIP" }]/[{ oxmultilang ident="USER_LIST_PLACE" }]</div></div></td>
+            [{/if}]
+            [{if $oxConfig->getShopConfVar('bJxNewsletterCountry')}]
+                <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_COUNTRY" }]</div></div></td>
+            [{/if}]
+            [{if $oxConfig->getShopConfVar('bJxNewsletterRevenue')}]
+                <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="JXNEWSLETTER_REVENUE" }]</div></div></td>
+            [{/if}]
+            [{if $oxConfig->getShopConfVar('bJxNewsletterSubscribed')}]
+                <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="JXNEWSLETTER_SUBSCRIBED" }]</div></div></td>
+            [{/if}]
             <td class="listfilter" style="[{$headStyle}]" align="center"><div class="r1"><div class="b1"><input type="checkbox" onclick="change_all('jxnewsletter_oxid[]', this)" id="maincheck"></div></div></td>
         </tr>
 
@@ -236,13 +247,13 @@ function changeColor(checkValue,rowNumber)
                 [{ cycle values="listitem,listitem2" assign="listclass" }]
                 <td valign="top" 
                     class="[{$listclass}]
-                        [{ if $User.oxstatus == "confirmed"}] active
+                        [{if $User.oxstatus == "confirmed"}] active
                         [{elseif $User.oxstatus == "unconfirmed"}] unconfirmed
                         [{elseif $User.oxstatus == "unsubscribed"}] unsubscribed
                         [{elseif $User.oxstatus == "bought"}] bought
                         [{/if}]" 
                     height="15" 
-                    [{ if $User.oxstatus == "confirmed"}]title="active"
+                    [{if $User.oxstatus == "confirmed"}]title="active"
                         [{elseif $User.oxstatus == "unconfirmed"}]title="unconfirmed"
                         [{elseif $User.oxstatus == "unsubscribed"}]title="unsubscribed"
                         [{elseif $User.oxstatus == "bought"}]title="bought"
@@ -290,21 +301,34 @@ function changeColor(checkValue,rowNumber)
                        [{$User.oxstreet}] [{$User.oxstreetnr}]
                     </a>
                 </td>*}]
-                <td class="[{$listclass}]">
-                    <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxCity[{$i}]">
-                       [{$User.oxzip}] [{$User.oxcity}]
-                    </a>
-                </td>
-                <td class="[{$listclass}]">
-                    <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxCountry[{$i}]">
-                       [{$User.oxcountry}]
-                    </a>
-                </td>
-                <td class="[{$listclass}]" align="right">
-                    &nbsp;<a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxRevenue[{$i}]">
-                       [{$User.oxrevenue|string_format:"%.2f"}]
-                    </a>&nbsp;
-                </td>
+                [{if $oxConfig->getShopConfVar('bJxNewsletterAddress')}]
+                    <td class="[{$listclass}]">
+                        <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxCity[{$i}]">
+                           [{$User.oxzip}] [{$User.oxcity}]
+                        </a>
+                    </td>
+                [{/if}]
+                [{if $oxConfig->getShopConfVar('bJxNewsletterCountry')}]
+                    <td class="[{$listclass}]">
+                        <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxCountry[{$i}]">
+                           [{$User.oxcountry}]
+                        </a>
+                    </td>
+                [{/if}]
+                [{if $oxConfig->getShopConfVar('bJxNewsletterRevenue')}]
+                    <td class="[{$listclass}]" align="right">
+                        &nbsp;<a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxRevenue[{$i}]">
+                           [{$User.oxrevenue|string_format:"%.2f"}]
+                        </a>&nbsp;
+                    </td>
+                [{/if}]
+                [{if $oxConfig->getShopConfVar('bJxNewsletterSubscribed')}]
+                    <td class="[{$listclass}]">
+                        <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxSubscribed[{$i}]">
+                           [{$User.oxsubscribed}]
+                        </a>
+                    </td>
+                [{/if}]
                 <td class="[{$listclass}]" align="center">
                     <input type="checkbox" name="jxnewsletter_oxid[]" 
                         onclick="changeColor(this.checked,[{$i}]);" 

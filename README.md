@@ -7,12 +7,16 @@
 2. In the shop admin goto settings/modules and activate **jxNewsletter**
 3. The module has now its own menu item under **User administration**
 
+
 ## Screenshots
 ![screenshot](https://github.com/job963/jxNewsletter/raw/master/docs/img/userlist.png)
 
+### Column Selection
 ![screenshot](https://github.com/job963/jxNewsletter/raw/master/docs/img/enabledisablecolumns.png)
 
+### Add userdefined columns
 ![screenshot](https://github.com/job963/jxNewsletter/raw/master/docs/img/userdefinedcolumns.png)
+
 
 ## Customization
 New fields can be defined by creating a new php file starting with ```jxnewsletter_``` and ending with ```.inc.php``` like eg. ```jxnewsletter_mynewfield.inc.php```.  
@@ -24,6 +28,7 @@ $aIncFields = array("name"  => "oxbirthdate",
                     "field" => "u.oxbirthdate AS   oxbirthdate" 
                        );
 ```
+
 
 ## Release Notes
 * **0.3**

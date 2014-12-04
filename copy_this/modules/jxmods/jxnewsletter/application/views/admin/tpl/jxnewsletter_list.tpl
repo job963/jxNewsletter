@@ -1,6 +1,8 @@
 [{include file="headitem.tpl" title="GENERAL_ADMIN_TITLE"|oxmultilangassign box=" "}]
 <link href="[{$oViewConf->getModuleUrl('jxnewsletter','out/admin/src/jxnewsletter.css')}]" type="text/css" rel="stylesheet">
 
+[{assign var="oxConfig" value=$oView->getConfig()}]
+
 <script type="text/javascript">
     
 var idlist = "";
@@ -104,7 +106,12 @@ function implode_all( name, elem )
 
 function changeColor(checkValue,rowNumber)
 {
-    aColumns = new Array("jxSal", "jxEmail", "jxFname", "jxLname", "jxCompany", "jxCity", "jxCountry", "jxRevenue");
+    aColumns = new Array("jxSal", "jxEmail", "jxFname", "jxLname"
+                    [{if $oxConfig->getShopConfVar('bJxNewsletterCompany')}], "jxCompany"[{/if}]
+                    [{if $oxConfig->getShopConfVar('bJxNewsletterAddress')}], "jxCity"[{/if}]
+                    [{if $oxConfig->getShopConfVar('bJxNewsletterCountry')}], "jxCountry"[{/if}]
+                    [{if $oxConfig->getShopConfVar('bJxNewsletterRevenue')}], "jxRevenue"[{/if}]
+                    [{if $oxConfig->getShopConfVar('bJxNewsletterSubscribed')}], "jxSubscribed"[{/if}] );
     if (checkValue) {
         for (var i = 0; i < aColumns.length; i++) {
             elemName = aColumns[i] + rowNumber;
@@ -137,8 +144,6 @@ function changeColor(checkValue,rowNumber)
 }
 
 </script>
-
-[{assign var="oxConfig" value=$oView->getConfig()}]
 
     <h1>[{ oxmultilang ident="JXNEWSLETTER_TITLE" }]</h1>
     <form name="transfer" id="transfer" action="[{ $shop->selflink }]" method="post">
@@ -221,7 +226,9 @@ function changeColor(checkValue,rowNumber)
             <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_BILLSAL" }]</div></div></td>
             <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="ORDER_LIST_CUSTOMERFNAME" }]</div></div></td>
             <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="ORDER_LIST_CUSTOMERLNAME" }]</div></div></td>
-            <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_COMPANY" }]</div></div></td>
+            [{if $oxConfig->getShopConfVar('bJxNewsletterCompany')}]
+                <td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_COMPANY" }]</div></div></td>
+            [{/if}]
             [{*<td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="GENERAL_TELEPHONE" }]</div></div></td>*}]
             [{*<td class="listfilter" style="[{$headStyle}]"><div class="r1"><div class="b1">[{ oxmultilang ident="USER_MAIN_STRNR" }]</div></div></td>*}]
             [{if $oxConfig->getShopConfVar('bJxNewsletterAddress')}]
@@ -286,11 +293,13 @@ function changeColor(checkValue,rowNumber)
                        [{$User.oxlname}]
                     </a>
                 </td>
-                <td class="[{$listclass}]">
-                    <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxCompany[{$i}]">
-                       [{$User.oxcompany}]
-                    </a>
-                </td>
+                [{if $oxConfig->getShopConfVar('bJxNewsletterCompany')}]
+                    <td class="[{$listclass}]">
+                        <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxCompany[{$i}]">
+                           [{$User.oxcompany}]
+                        </a>
+                    </td>
+                [{/if}]
                 [{*<td class="[{$listclass}]">
                     <a href="Javascript:editThis('[{$User.oxid}]','admin_user');" id="jxFon[{$i}]">
                        [{$User.oxfon}]

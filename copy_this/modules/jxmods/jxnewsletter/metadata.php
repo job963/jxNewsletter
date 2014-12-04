@@ -16,7 +16,7 @@ $aModule = array(
                         'en' => 'Display and Export of Newsletter Subscriptions.'
                         ),
     'thumbnail'    => 'jxnewsletter.png',
-    'version'      => '0.3',
+    'version'      => '0.3.1',
     'author'       => 'Joachim Barthel',
     'url'          => 'https://github.com/job963/jxNewsletter',
     'email'        => 'jobarthel@gmail.com',
